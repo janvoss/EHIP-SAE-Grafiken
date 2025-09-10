@@ -1,0 +1,54 @@
+---
+title: "Grafiken"
+format: html
+editor: source
+---
+
+# Organe der EU
+
+```{python}
+#| message: false
+#| warning: false
+
+import graphviz
+from IPython.display import display, SVG
+
+# Graph mit 'circo'-Engine für kreisförmige Anordnung mit kleinerem Abstand
+g = graphviz.Digraph('satelliten', engine='circo' #,
+                #  graph_attr={'nodesep': '0.01', 'ranksep': '0.01'}
+)  # Abstände angepasst
+
+# Zentraler Knoten: größer, fett, zentriert
+g.node('Zentrum', 'Organe\n der EU',
+       fontsize='20',
+       fontname='Times-Bold',  # Fett durch spezifische Schriftart
+      shape='circle',
+       width='2'
+)  # Größe angepasst
+
+# Satelliten-Knoten mit eigenen Stichpunkten
+satellite_nodes = {
+    'A': 'Europäischer\n Rat',
+    'B': 'Europäische\n Kommission',
+    'C': 'Europäisches\n Parlament',
+    'D': 'Europäische\n Zentralbank',
+    'E': 'Gerichtshof\n der EU'
+}
+
+for node_id, label in satellite_nodes.items():
+    g.node(node_id, label, shape='circle', width='1.5')
+
+
+# Alle Kanten unsichtbar machen (aber kürzer)
+for node in satellite_nodes.keys():
+    g.edge(node, 'Zentrum', style="invis")
+
+
+#Datei erzeugen
+g.format = 'svg'  # Format setzen
+g.render(filename='Maerkte', cleanup=True)  # Erzeugt output.svg
+
+# Display the graph
+display(g)
+```
+
