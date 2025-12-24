@@ -32,7 +32,8 @@ satellite_nodes = {
     'B': 'Europäische\n Kommission',
     'C': 'Europäisches\n Parlament',
     'D': 'Europäische\n Zentralbank',
-    'E': 'Gerichtshof\n der EU'
+    'E': 'Gerichtshof\n der EU',
+    'F': 'Rechnungshof'
 }
 
 for node_id, label in satellite_nodes.items():
@@ -50,5 +51,37 @@ g.render(filename='Maerkte', cleanup=True)  # Erzeugt output.svg
 
 # Display the graph
 display(g)
+```
+
+# Staatenbund vs Bundesstaat
+
+```{python}
+import graphviz
+from IPython.display import display, SVG
+
+# Erstelle einen neuen gerichteten Graphen
+g_line = graphviz.Digraph('horizontal_line', format='svg')
+
+# Setze die Ausrichtung auf "Left to Right" für eine horizontale Linie
+g_line.attr(rankdir='LR')
+
+# Definiere die beiden Knoten ohne Umrandung
+g_line.node('sta_bund', 'Staatenbund', shape='none')
+g_line.node('bun_staat', 'Bundesstaat', shape='none')
+
+# Füge einen unsichtbaren Knoten in der Mitte hinzu, um den Abstand zu erzwingen
+g_line.node('phantom_node', '', shape='none', width='2', height='0')
+
+# Verbinde die Hauptknoten mit dem unsichtbaren Knoten über unsichtbare Kanten
+# Die 'len' Attribute dieser unsichtbaren Kanten beeinflussen den Abstand
+g_line.edge('sta_bund', 'phantom_node', style='invis', len='3.0')
+g_line.edge('phantom_node', 'bun_staat', style='invis', len='3.0')
+
+# Zeichne die sichtbare Linie DIREKT zwischen den Hauptknoten
+# Ihre Länge wird nun indirekt durch die unsichtbaren Kanten und Knoten beeinflusst
+g_line.edge('sta_bund', 'bun_staat', arrowhead='none', penwidth='2.0') # penwidth für bessere Sichtbarkeit
+
+# Zeige den Graphen an
+display(g_line)
 ```
 

@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="organe-der-eu" class="level1">
 <h1>Organe der EU</h1>
-<div id="187c820c" class="cell" data-message="false" data-execution_count="1">
+<div id="ee2e1c26" class="cell" data-message="false" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, SVG</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -123,28 +123,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'B'</span>: <span class="st">'Europäische</span><span class="ch">\n</span><span class="st"> Kommission'</span>,</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'C'</span>: <span class="st">'Europäisches</span><span class="ch">\n</span><span class="st"> Parlament'</span>,</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'D'</span>: <span class="st">'Europäische</span><span class="ch">\n</span><span class="st"> Zentralbank'</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'E'</span>: <span class="st">'Gerichtshof</span><span class="ch">\n</span><span class="st"> der EU'</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node_id, label <span class="kw">in</span> satellite_nodes.items():</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    g.node(node_id, label, shape<span class="op">=</span><span class="st">'circle'</span>, width<span class="op">=</span><span class="st">'1.5'</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'E'</span>: <span class="st">'Gerichtshof</span><span class="ch">\n</span><span class="st"> der EU'</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'F'</span>: <span class="st">'Rechnungshof'</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node_id, label <span class="kw">in</span> satellite_nodes.items():</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    g.node(node_id, label, shape<span class="op">=</span><span class="st">'circle'</span>, width<span class="op">=</span><span class="st">'1.5'</span>)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Alle Kanten unsichtbar machen (aber kürzer)</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> satellite_nodes.keys():</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    g.edge(node, <span class="st">'Zentrum'</span>, style<span class="op">=</span><span class="st">"invis"</span>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Alle Kanten unsichtbar machen (aber kürzer)</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> satellite_nodes.keys():</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    g.edge(node, <span class="st">'Zentrum'</span>, style<span class="op">=</span><span class="st">"invis"</span>)</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">#Datei erzeugen</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>g.<span class="bu">format</span> <span class="op">=</span> <span class="st">'svg'</span>  <span class="co"># Format setzen</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>g.render(filename<span class="op">=</span><span class="st">'Maerkte'</span>, cleanup<span class="op">=</span><span class="va">True</span>)  <span class="co"># Erzeugt output.svg</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the graph</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>display(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">#Datei erzeugen</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>g.<span class="bu">format</span> <span class="op">=</span> <span class="st">'svg'</span>  <span class="co"># Format setzen</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>g.render(filename<span class="op">=</span><span class="st">'Maerkte'</span>, cleanup<span class="op">=</span><span class="va">True</span>)  <span class="co"># Erzeugt output.svg</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the graph</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>display(g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="Grafiken_files/figure-html/cell-2-output-1.svg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="staatenbund-vs-bundesstaat" class="level1">
+<h1>Staatenbund vs Bundesstaat</h1>
+<div id="7b4bfbb4" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, SVG</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Erstelle einen neuen gerichteten Graphen</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>g_line <span class="op">=</span> graphviz.Digraph(<span class="st">'horizontal_line'</span>, <span class="bu">format</span><span class="op">=</span><span class="st">'svg'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Setze die Ausrichtung auf "Left to Right" für eine horizontale Linie</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>g_line.attr(rankdir<span class="op">=</span><span class="st">'LR'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Definiere die beiden Knoten ohne Umrandung</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>g_line.node(<span class="st">'sta_bund'</span>, <span class="st">'Staatenbund'</span>, shape<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>g_line.node(<span class="st">'bun_staat'</span>, <span class="st">'Bundesstaat'</span>, shape<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Füge einen unsichtbaren Knoten in der Mitte hinzu, um den Abstand zu erzwingen</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>g_line.node(<span class="st">'phantom_node'</span>, <span class="st">''</span>, shape<span class="op">=</span><span class="st">'none'</span>, width<span class="op">=</span><span class="st">'2'</span>, height<span class="op">=</span><span class="st">'0'</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Verbinde die Hauptknoten mit dem unsichtbaren Knoten über unsichtbare Kanten</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Die 'len' Attribute dieser unsichtbaren Kanten beeinflussen den Abstand</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>g_line.edge(<span class="st">'sta_bund'</span>, <span class="st">'phantom_node'</span>, style<span class="op">=</span><span class="st">'invis'</span>, <span class="bu">len</span><span class="op">=</span><span class="st">'3.0'</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>g_line.edge(<span class="st">'phantom_node'</span>, <span class="st">'bun_staat'</span>, style<span class="op">=</span><span class="st">'invis'</span>, <span class="bu">len</span><span class="op">=</span><span class="st">'3.0'</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Zeichne die sichtbare Linie DIREKT zwischen den Hauptknoten</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Ihre Länge wird nun indirekt durch die unsichtbaren Kanten und Knoten beeinflusst</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>g_line.edge(<span class="st">'sta_bund'</span>, <span class="st">'bun_staat'</span>, arrowhead<span class="op">=</span><span class="st">'none'</span>, penwidth<span class="op">=</span><span class="st">'2.0'</span>) <span class="co"># penwidth für bessere Sichtbarkeit</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Zeige den Graphen an</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>display(g_line)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Grafiken_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
