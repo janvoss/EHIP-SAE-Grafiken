@@ -1,0 +1,543 @@
+---
+title: "EU-Karte"
+format: html
+editor: visual
+---
+
+```{r}
+# Notwendige Pakete laden (falls nicht installiert: install.packages("..."))
+library(tidyverse)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+
+# 1. Geodaten für Europa laden
+europe <- ne_countries(scale = "medium", continent = "europe", returnclass = "sf")
+
+# 2. Datenrahmen mit den Beitrittsjahren erstellen
+eu_accession <- data.frame(
+  name = c("Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+           "Denmark", "Ireland", "United Kingdom",
+           "Greece", 
+           "Portugal", "Spain",
+           "Austria", "Finland", "Sweden",
+           "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+           "Bulgaria", "Romania",
+           "Croatia"),
+  beitritt = c(rep("1952/58 (Gründer)", 6),
+               rep("1973", 3),
+               "1981",
+               rep("1986", 2),
+               rep("1995", 3),
+               rep("2004", 10),
+               rep("2007", 2),
+               "2013")
+)
+
+# 3. Geodaten mit den Beitrittsdaten verbinden (Left Join)
+europe_eu <- europe %>%
+  left_join(eu_accession, by = "name") %>%
+  # Filter für eine bessere Ansicht (optional: schneidet Russland/Überseegebiete teils ab)
+  st_crop(xmin = -25, xmax = 45, ymin = 30, ymax = 75)
+
+# 4. Karte plotten
+ggplot(data = europe_eu) +
+  geom_sf(aes(fill = beitritt), color = "white", size = 0.2) +
+  scale_fill_viridis_d(option = "viridis", na.value = "grey90", name = "Beitrittsjahr") +
+  theme_minimal() +
+  labs(
+    title = "Mitgliedstaaten der EU nach Beitrittsjahr",
+    subtitle = "Visualisiert mit R und rnaturalearth",
+    caption = "Hinweis: Das Vereinigte Königreich ist 2020 ausgetreten."
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank()
+  )
+```
+
+```{r}
+
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+
+# Geodaten laden
+europe <- ne_countries(scale = "medium", continent = "europe", returnclass = "sf")
+
+# Erweiterte Datenliste
+eu_status <- data.frame(
+  name = c("Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+           "Denmark", "Ireland", "Greece", "Portugal", "Spain", "Austria", 
+           "Finland", "Sweden", "Estonia", "Latvia", "Lithuania", "Malta", 
+           "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+           "Bulgaria", "Romania", "Croatia",
+           "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+           "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"),
+  status = c(rep("Mitglied (1952-1986)", 12), 
+             rep("Mitglied (1995-2013)", 15),
+             rep("Beitrittskandidat", 9),
+             "Potenzieller Kandidat")
+)
+
+# Join und Zuschneiden
+europe_map <- europe %>%
+  left_join(eu_status, by = "name") %>%
+  st_crop(xmin = -25, xmax = 50, ymin = 34, ymax = 72)
+
+# Plotten
+ggplot(data = europe_map) +
+  geom_sf(aes(fill = status), color = "white", size = 0.1) +
+  scale_fill_manual(values = c(
+    "Mitglied (1952-1986)" = "#2c7bb6",
+    "Mitglied (1995-2013)" = "#abd9e9",
+    "Beitrittskandidat" = "#fdae61",
+    "Potenzieller Kandidat" = "#d7191c"
+  ), na.value = "grey90", name = "Status") +
+  theme_minimal() +
+  labs(title = "EU-Mitglieder und Beitrittskandidaten 2026") +
+  theme(panel.grid = element_blank(), axis.text = element_blank())
+
+```
+
+```{r}
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+
+# 1. Alle Länder laden (um Kontinent-Grenzen zu umgehen)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# 2. Status-Tabelle (Namen müssen exakt mit world$name übereinstimmen)
+eu_status <- data.frame(
+  name = c("Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+           "Denmark", "Ireland", "Greece", "Portugal", "Spain", "Austria", 
+           "Finland", "Sweden", "Estonia", "Latvia", "Lithuania", "Malta", 
+           "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+           "Bulgaria", "Romania", "Croatia",
+           "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+           "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"),
+  status = c(rep("Mitglied (1952-1986)", 12), 
+             rep("Mitglied (1995-2013)", 15),
+             rep("Beitrittskandidat", 9),
+             "Potenzieller Kandidat")
+)
+
+# 3. Daten verknüpfen
+europe_map <- world %>%
+  left_join(eu_status, by = "name") %>%
+  # Ausschnitt anpassen: xmax auf 55 für die Osttürkei, ymin auf 30 für den Süden
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 4. Plotten
+ggplot(data = europe_map) +
+  geom_sf(aes(fill = status), color = "white", size = 0.1) +
+  scale_fill_manual(
+    values = c(
+      "Mitglied (1952-1986)" = "#2c7bb6",   # Dunkelblau
+      "Mitglied (1995-2013)" = "#abd9e9",   # Hellblau
+      "Beitrittskandidat" = "#fdae61",      # Orange
+      "Potenzieller Kandidat" = "#d7191c"   # Rot
+    ), 
+    na.value = "grey90", 
+    name = "Status"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "EU-Mitglieder und Beitrittskandidaten",
+    subtitle = "Inklusive Türkei und Kaukasus-Region",
+    caption = "Daten: rnaturalearth | Stand: 2026"
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+
+# 1. Geodaten laden (weltweit, um Türkei/Georgien sicher einzuschließen)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# 2. Umfassende Datenliste erstellen
+eu_data <- data.frame(
+  name = c(
+    "Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+    "Denmark", "Ireland", "United Kingdom",
+    "Greece", 
+    "Portugal", "Spain",
+    "Austria", "Finland", "Sweden",
+    "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+    "Bulgaria", "Romania",
+    "Croatia",
+    "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+    "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"
+  ),
+  kategorie = c(
+    rep("1952/58 (Gründer)", 6),
+    rep("1973", 3), # UK inkludiert für historischen Kontext
+    "1981",
+    rep("1986", 2),
+    rep("1995", 3),
+    rep("2004", 10),
+    rep("2007", 2),
+    "2013",
+    rep("Beitrittskandidaten", 10)
+  )
+)
+
+# 3. Join und Geografischer Ausschnitt
+# Wir erweitern xmax auf 55 für Georgien und ymin auf 30 für Zypern/Türkei
+map_combined <- world %>%
+  left_join(eu_data, by = "name") %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 4. Karte plotten
+ggplot(data = map_combined) +
+  geom_sf(aes(fill = kategorie), color = "white", size = 0.1) +
+  scale_fill_manual(
+    values = c(
+      "1952/58 (Gründer)" = "#08306b",
+      "1973"              = "#08519c",
+      "1981"              = "#2171b5",
+      "1986"              = "#4292c6",
+      "1995"              = "#6baed6",
+      "2004"              = "#9ecae1",
+      "2007"              = "#c6dbef",
+      "2013"              = "#deebf7",
+      "Beitrittskandidaten" = "#ff7f00"  # Kontrastreiches Orange
+    ),
+    na.value = "grey90",
+    name = "Status / Beitritt"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Die Entwicklung der Europäischen Union",
+    subtitle = "Mitgliedstaaten nach Beitrittsjahr und aktuelle Kandidaten (Stand 2026)",
+    caption = "Hinweis: Das Vereinigte Königreich (1973) ist 2020 ausgetreten."
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    legend.position = "right",
+    legend.title = element_text(face = "bold")
+  )
+
+
+```
+
+```{r}
+# Zusätzliche Pakete laden
+# install.packages(c("gganimate", "gifski"))
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(gganimate)
+
+# 1. Geodaten laden
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# 2. Daten mit einer numerischen Reihenfolge (Sequenz) erstellen
+# Wir nutzen eine Spalte 'jahr_num', um die Reihenfolge der Animation zu steuern
+eu_anim_data <- data.frame(
+  name = c(
+    "Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+    "Denmark", "Ireland", "United Kingdom",
+    "Greece", 
+    "Portugal", "Spain",
+    "Austria", "Finland", "Sweden",
+    "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+    "Bulgaria", "Romania",
+    "Croatia",
+    "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+    "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"
+  ),
+  jahr_label = c(
+    rep("1952/58 (Gründer)", 6),
+    rep("1973", 3),
+    "1981",
+    rep("1986", 2),
+    rep("1995", 3),
+    rep("2004", 10),
+    rep("2007", 2),
+    "2013",
+    rep("Kandidaten 2026", 10)
+  ),
+  ordnung = c(
+    rep(1, 6), rep(2, 3), 3, rep(4, 2), rep(5, 3), rep(6, 10), rep(7, 2), 8, rep(9, 10)
+  )
+)
+
+# 3. Daten verknüpfen und zuschneiden
+map_data_animated <- world %>%
+  left_join(eu_anim_data, by = "name") %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 4. Die Animation erstellen
+anim <- ggplot(data = map_data_animated) +
+  geom_sf(aes(fill = jahr_label), color = "white", size = 0.1) +
+  # Wir nutzen shadow_mark(), damit die alten Phasen im Bild bleiben
+  scale_fill_manual(
+    values = c(
+      "1952/58 (Gründer)" = "#08306b",
+      "1973"              = "#08519c",
+      "1981"              = "#2171b5",
+      "1986"              = "#4292c6",
+      "1995"              = "#6baed6",
+      "2004"              = "#9ecae1",
+      "2007"              = "#c6dbef",
+      "2013"              = "#deebf7",
+      "Kandidaten 2026"   = "#ff7f00"
+    ),
+    na.value = "grey90",
+    name = "Zeitraum"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Die Erweiterung der EU: {closest_state}",
+    subtitle = "Vom Gründungsjahr bis zu den heutigen Kandidaten",
+    caption = "Daten: rnaturalearth | Animation: gganimate"
+  ) +
+  theme(panel.grid = element_blank(), axis.text = element_blank()) +
+  # Kern der Animation:
+  transition_states(ordnung, transition_length = 2, state_length = 3) +
+  shadow_mark(past = TRUE) # WICHTIG: Erhält die bereits eingefärbten Länder
+
+# 5. Animation rendern und anzeigen
+animate(anim, nframes = 150, fps = 10, width = 800, height = 600, renderer = gifski_renderer())
+```
+
+```{r}
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(gganimate)
+library(gifski)
+
+# --- 1. DATEN VORBEREITEN (wie zuvor) ---
+
+# Geodaten laden
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Daten für die Animation (Beitrittsjahre und Reihenfolge)
+eu_anim_data <- data.frame(
+  name = c(
+    "Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+    "Denmark", "Ireland", "United Kingdom",
+    "Greece", "Portugal", "Spain",
+    "Austria", "Finland", "Sweden",
+    "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+    "Bulgaria", "Romania", "Croatia",
+    "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+    "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"
+  ),
+  jahr_label = c(
+    rep("1952/58 (Gründer)", 6), rep("1973", 3), "1981", rep("1986", 2),
+    rep("1995", 3), rep("2004", 10), rep("2007", 2), "2013",
+    rep("Kandidaten 2026", 10)
+  ),
+  ordnung = c(
+    rep(1, 6), rep(2, 3), 3, rep(4, 2), rep(5, 3), rep(6, 10), 
+    rep(7, 2), 8, rep(9, 10)
+  )
+)
+
+# Verknüpfen und Zuschneiden für die Animation
+map_data_animated <- world %>%
+  left_join(eu_anim_data, by = "name") %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# --- NEU: Basis-Karte für den Hintergrund erstellen ---
+# Wir nehmen einfach die Weltkarte und schneiden sie gleich zu.
+# Diese Daten haben KEINE Beitrittsinformationen.
+europe_base_map <- world %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+
+# --- 2. DIE ANIMATION ERSTELLEN (Layering-Technik) ---
+
+anim2 <- ggplot() +
+  # === LAYER 1: Der statische Hintergrund ===
+  # Wir nutzen die 'europe_base_map' Daten.
+  # Füllung ist fest auf ein helles Grau ("grey95") eingestellt.
+  geom_sf(data = europe_base_map, fill = "grey95", color = "white", size = 0.1) +
+  
+  # === LAYER 2: Die animierte Farbe ===
+  # Wir nutzen die 'map_data_animated' Daten.
+  # Hier wird 'fill' durch die Animation gesteuert.
+  geom_sf(data = map_data_animated, aes(fill = jahr_label), color = "white", size = 0.1) +
+  
+  # --- Styling & Animation (wie zuvor) ---
+  scale_fill_manual(
+    values = c(
+      "1952/58 (Gründer)" = "#08306b", "1973" = "#08519c", "1981" = "#2171b5",
+      "1986" = "#4292c6", "1995" = "#6baed6", "2004" = "#9ecae1",
+      "2007" = "#c6dbef", "2013" = "#deebf7", "Kandidaten 2026" = "#ff7f00"
+    ),
+    # WICHTIG: na.value auf "transparent" setzen, damit der graue 
+    # Hintergrund von Layer 1 durchscheint, bevor ein Land Farbe bekommt.
+    na.value = "transparent", 
+    name = "Zeitraum"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Die Erweiterung der EU",
+    subtitle = "Phase: {closest_state} (von 9)",
+    caption = "Daten: rnaturalearth | Animation: gganimate"
+  ) +
+  theme(panel.grid = element_blank(), axis.text = element_blank()) +
+  transition_states(ordnung, transition_length = 2, state_length = 3) +
+  shadow_mark(past = TRUE)
+
+# 3. Rendern
+animate(anim2, nframes = 150, fps = 10, width = 800, height = 600, renderer = gifski_renderer())
+```
+
+```{r}
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(gganimate)
+library(gifski)
+
+# 1. Geodaten laden
+world <- ne_countries(scale = "medium", returnclass = "sf")
+europe_base <- world %>% st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 2. Daten für die Zeitleiste erstellen
+# Wir erstellen nun Zustände für spezifische Schlüsseljahre
+eu_steps <- data.frame(
+  name = c(
+    "Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+    "Denmark", "Ireland", "United Kingdom",
+    "Greece", "Portugal", "Spain", "Austria", "Finland", "Sweden",
+    "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+    "Bulgaria", "Romania", "Croatia", "United Kingdom", # UK doppelt für Austritt
+    "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+    "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"
+  ),
+  jahr = c(
+    1958, 1958, 1958, 1958, 1958, 1958,
+    1973, 1973, 1973, 
+    1981, 1986, 1986, 1995, 1995, 1995,
+    2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004,
+    2007, 2007, 2013, 
+    2020, # Das Jahr für den Brexit
+    2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026
+  ),
+  status = c(
+    rep("Mitglied", 28), 
+    "Austritt", 
+    rep("Kandidat", 10)
+  )
+)
+
+# 3. Daten verknüpfen
+map_data <- world %>%
+  inner_join(eu_steps, by = "name") %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 4. Die Animation plotten
+anim_brexit <- ggplot() +
+  # Hintergrund: Alle Länder in hellem Grau
+  geom_sf(data = europe_base, fill = "grey95", color = "white", size = 0.1) +
+  
+  # Vordergrund: Die EU-Staaten
+  geom_sf(data = map_data, aes(fill = status), color = "white", size = 0.1) +
+  
+  scale_fill_manual(
+    values = c(
+      "Mitglied" = "#2c7bb6", 
+      "Austritt" = "grey95", # UK wird wieder wie der Hintergrund
+      "Kandidat" = "#ff7f00"
+    ),
+    guide = "none" # Legende weg, da Titel alles erklärt
+  ) +
+  
+  theme_minimal() +
+  labs(
+    title = "Die Geschichte der EU: Jahr {frame_time}",
+    subtitle = "Blau: Mitglieder | Orange: Kandidaten | Grau: Nicht-Mitglieder/Austritt",
+    caption = "2020: Austritt des Vereinigten Königreichs (Brexit)"
+  ) +
+  theme(panel.grid = element_blank(), axis.text = element_blank()) +
+  
+  # Hier nutzen wir transition_time für eine chronologische Abfolge
+  transition_time(jahr) +
+  shadow_mark(past = TRUE)
+
+# 5. Rendern
+animate(anim_brexit, nframes = 100, fps = 5, width = 800, height = 600, renderer = gifski_renderer())
+```
+
+```{r}
+library(tidyverse)
+library(rnaturalearth)
+library(sf)
+library(gganimate)
+library(gifski)
+
+# 1. Geodaten laden
+world <- ne_countries(scale = "medium", returnclass = "sf")
+europe_base <- world %>% st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 2. Daten mit festen Jahres-Etappen
+eu_steps <- data.frame(
+  name = c(
+    "Belgium", "Germany", "France", "Italy", "Luxembourg", "Netherlands",
+    "Denmark", "Ireland", "United Kingdom",
+    "Greece", "Portugal", "Spain", "Austria", "Finland", "Sweden",
+    "Estonia", "Latvia", "Lithuania", "Malta", "Poland", "Slovakia", "Slovenia", "Czech Rep.", "Hungary", "Cyprus",
+    "Bulgaria", "Romania", "Croatia", "United Kingdom",
+    "Albania", "Bosnia and Herz.", "Georgia", "Moldova", "Montenegro", 
+    "N. Macedonia", "Serbia", "Turkey", "Ukraine", "Kosovo"
+  ),
+  jahr = c(
+    1958, 1958, 1958, 1958, 1958, 1958,
+    1973, 1973, 1973, 
+    1981, 1986, 1986, 1995, 1995, 1995,
+    2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004, 2004,
+    2007, 2007, 2013, 
+    2020, # Brexit
+    2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026
+  ),
+  status = c(
+    rep("Mitglied", 28), 
+    "Austritt", 
+    rep("Kandidat", 10)
+  )
+)
+
+# 3. Join
+map_data <- world %>%
+  inner_join(eu_steps, by = "name") %>%
+  st_crop(xmin = -25, xmax = 55, ymin = 30, ymax = 72)
+
+# 4. Animation
+anim_final <- ggplot() +
+  geom_sf(data = europe_base, fill = "grey95", color = "white", size = 0.1) +
+  geom_sf(data = map_data, aes(fill = status), color = "white", size = 0.1) +
+  scale_fill_manual(
+    values = c("Mitglied" = "#2c7bb6", "Austritt" = "grey95", "Kandidat" = "#ff7f00"),
+    guide = "none"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Die Erweiterung der EU: Jahr {closest_state}", # {closest_state} zeigt das Jahr exakt an
+    subtitle = "Blau: Mitglieder | Orange: Beitrittskandidaten | Grau: Austritt/Nicht-Mitglied",
+    caption = "Stand: Januar 2026"
+  ) +
+  theme(panel.grid = element_blank(), axis.text = element_blank()) +
+  # transition_states verhindert das "Flimmern" zwischen den Jahren
+  transition_states(jahr, transition_length = 0, state_length = 1) +
+  shadow_mark(past = TRUE)
+
+# 5. Rendern (nframes entspricht hier der Anzahl der Jahre in der Liste)
+animate(anim_final, nframes = 50, fps = 5, width = 800, height = 600, renderer = gifski_renderer())
+```
+
